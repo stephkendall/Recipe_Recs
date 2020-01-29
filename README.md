@@ -10,4 +10,4 @@ Creating a content-based recommendation system that incorporates user input in t
 
 Correlative effects of the continuous variables were assessed, determining that protein, sodium, and cholesterol were the only variables that had some form of correlation between them. 
 
-![Word Cloud](Misc/wordcloud.png)
+![Heat Map](Misc/heatmap.pdf)
