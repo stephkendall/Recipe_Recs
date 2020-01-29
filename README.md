@@ -1,7 +1,13 @@
-# FP_Practice
-Final Project Practice Repo
+# Recipe Recommendations
 
+Creating a content-based recommendation system that incorporates user input in the form of ingredient keywords to make accurate suggestions for dinner
 
-Intended to be used for practicing code for final project
+### Data Sources
 
-Will be scraping recipe data and preprocessing ingredients for building a recommendation engine
+5k+ main dish recipes with 13k+ ingredients were scraped from AllRecipes.com, including the nutritional information, total cooking time, average user rating, instructions, and an image of the recipe
+
+### EDA
+
+Correlative effects of the continuous variables were assessed, determining that protein, sodium, and cholesterol were the only variables that had some form of correlation between them. 
+
+![Word Cloud](wordcloud.png)
