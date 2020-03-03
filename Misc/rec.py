@@ -112,16 +112,41 @@ def parse(st):
     return ((res.group('name') or '').strip())
 
 
-df = pd.read_csv(r'/Users/stephaniekendall/Desktop/Errthang/Flatiron/projects/FP_Practice/my_info.csv')
+df = pd.read_csv(r'/Users/stephaniekendall/Desktop/Errthang/Flatiron/projects/Recipe_Recs/CSV Files/final.csv')
+df = df.iloc[:5201]
 
 if st.checkbox('Show dataframe'):
     st.write(df)
 
 
-import pickle 
+all_ings = df['ingredients'].str.replace("]",'').str.replace("'",'').str.replace("[",'').str.replace("(",'').str.replace(')','').str.replace('"','').str.split(',') 
 
-with open("lemmas.txt", "rb") as fp:   # Unpickling
-    lemmas = pickle.load(fp)
+parsed_ingredients = []
+for ings in all_ings:
+    between = []
+    for ing in ings:
+        if len(parse(ing)) > 1:
+            between.append(parse(ing))
+    parsed_ingredients.append(between)
+    
+import spacy
+
+nlp = spacy.load("en_core_web_lg")
+
+
+lemmas = []
+pos_text = []
+for val in tqdm(parsed_ingredients):
+    between = []
+    for v in val:
+        pp = nlp(v)
+        for p in pp:
+            if p.lemma_ != 'mix' and p.lemma_ != 'powder' and p.lemma_ != 'inch' and p.lemma_ !=  'uncooked' and p.lemma_ !=  'whole' and p.lemma_ !=  'boneless' and p.lemma_ !=  'heavy' and p.lemma_ !=  'such' and p.lemma_ !=  'style' and p.lemma_ !=  'thick' and p.lemma_ !=  'root' and p.lemma_ !=  'bite' and p.lemma_ != 'bottle' and p.tag_ != 'NNS' and p.lemma_ != 'package' and p.lemma_ != 'envelope' and p.lemma_ != 'cup' and p.lemma_ != 'ola' and p.lemma_ != 'cubed' and p.lemma_ != 'skinless' and p.lemma_ != 'slices' and p.lemma_ != 'rest' and p.lemma_ != 'undrained' and p.lemma_ != 'cooking' and p.lemma_ != 'cut' and p.lemma_ != 'purpose' and p.lemma_ != 'optional' and p.lemma_ != 'extra' and p.pos_ != 'X' and p.lemma_ != 'thigh' and p.lemma_ != 'aluminum' and p.lemma_ != 'foil' and p.lemma_ != 'spray' and p.lemma_ != 'fillet' and p.pos_ != 'SCONJ' and p.text != 'ground' and p.lemma_ != 'breast' and p.lemma_ != 'half' and p.dep_ != 'prep' and p.dep_ != 'mark' and p.pos_ != 'NUM' and p.dep_ != 'pobj' and p.dep_ != 'advmod' and p.pos_ != 'VERB' and p.pos_ != 'CCONJ' and p.pos_ != 'DET' and p.pos_ != 'PUNCT' and p.pos_ != 'PART' and p.pos_ != 'ADP' and p.dep_ != 'conj' and p.dep_ != 'nsubj' and p.dep_ != 'nmod':
+                if p.lemma_ not in between:
+                    between.append(p.lemma_)
+    lemmas.append(between)
+    
+
     
 st.title('Recipe Recommender')
 """ NLP and Recommendations"""
@@ -170,7 +195,7 @@ def keywords_recommendation(keys):
     # Print the top matching eecipes
     st.write("Our top %s most similar recipes for the keywords %s are:" %(number_of_hits, keys))
     for idx, (recipe) in enumerate(zip(top_hits.index, top_hits)):
-        st.write("%d '%s' with a similarity score of %.3f" %(idx, recipe))
+        st.write("%d '%s'" %(idx, recipe))
             
 
 #ask user for input
@@ -186,239 +211,4 @@ if test:
         st.write(x.split(','))
         st.write(keywords_recommendation(x.split(',')))
         st.success('Searching for recipes similar to your inputs' )
-
-
-# def text_analyzer(my_text):
-#     nlp = spacy.load('en_core_web_lg')
-#     docx = nlp(my_text)
-#     tokens = [token.text for token in docx]
-#     allData = [('"Tokens":{},\n"Lemma":{},\n"Point-of-Speech":{}'.format(token.text, token.lemma_, token.pos_)) for token in docx]
-#     return allData
-
-
-# checkbox_1 = st.sidebar.checkbox('Get Your Rec On!')
-
-# option = st.sidebar.text_area('Enter Ingredient(s)','Here')
-# # if checkbox_1 == True:
-    
-
-
-# def main():
-
-# Tokenization
-# if st.sidebar.checkbox('Show Tokens and Lemma' == True):
-#     st.subheader('Tokenize Your Text')
-#     message = st.text_area('Enter Text', 'Type Here')
-# #     if st.button('Analyze'):
-# #         nlp_result = text_analyzer(message)
-# #         st.json(nlp_result)
-# if checkbox_1 == True:
-#     st.subheader('Get Your Recommendations On!')
-#     option = st.text_area('Enter Ingredient(s)', 'Type Here')
-#     prediction = keywords_recommendation(option)
-#     prediction2 = pd.DataFrame(keywords_recommendation((search_terms),5), columns = ["Product name", "% similarity"])
-#     st.table(prediction2)
-
-    
-
-    
-
-#     rand_topic_distr, summ, tags, most_sim, most_dif = get_rec_random(matrix, final_lda_dtm, talk_df, 5)
-#     st.plotly_chart(rand_topic_distr)
-#     st.subheader('SUMMARY:')
-#     st.write(summ)
-#     st.subheader('CURRENT TED TAGS:')
-#     tag_str_ = ', '.join(tags)
-#     st.write(tag_str_)
-
-#     st.subheader('MOST SIMILAR TALKS:')
-#     for talk in most_sim:
-#         st.write(talk_df.iloc[talk]['title'])
-
-#     st.subheader('MOST DIFFERENT TALKS:')
-#     for talk in most_dif:
-#         st.write(talk_df.iloc[talk]['title'])
-            
-
-# search_terms = st.sidebar.text_input('Enter ingredients',"HERE")
-# prediction = keywords_recommendation((search_terms),5)
-# prediction2 = pd.DataFrame(keywords_recommendation((search_terms),5), columns = ["Product name", "% similarity"])
-# st.table(prediction2)
-
-# option = st.sidebar.text_input("YOUR INGREDIENTS")
-
-# if st.sidebar.button('Submit'):
-#     keywords_recommendation([search_terms],5)
-    
-# st.write("YOUR INGREDIENTS")
-    
-# # Text Input
-# firstname = st.text_input("Enter Your First Name","Type Here..")
-# if st.button("Submit"):
-#     result = firstname.title()
-#     st.success(result)
-
-# # Text Area
-# message = st.text_area("Enter Your Message","Type Here..")
-# if st.button("Enter"):
-#     result = message.title()
-#     st.success(result)
-
- # # SelectBox
-# occupation = st.selectbox("Your Occupation",["Programmer","DataScientist","Chef","Doctor"])
-# st.write("You selected this option ", occupation)
-
-# # MultiSelect
-# location = st.multiselect("Where do you work?",("London","New York","Accra","Kieve","Paris"))
-# st.write("You selected",len(location),"locations")
-
-
-# checkbox_1 = st.sidebar.checkbox('Recommendations based on keywords')
-
-# option = st.sidebar.selectbox('Select a keyword', keywords)
-
-# keywords_recommendation(st.multiselect,8)
-
-# #Text/Title
-# st.title('Streamlit Tutorials')
-
-# # Header/Subheader
-# st.header('This is a header')
-# st.subheader('This is a subheader')
-
-# # Text
-# st.text('Hello Streamlit')
-
-
-
-# # Error/Colorful Text
-# st.success('Successful')
-# st.info('Information')
-# st.warning('This is a warning')
-# st.error('This is an error')
-# st.exception('NameError("name three not defined")')
-
-# # # Get Help Info About Python
-# # st.help(range)
-
-# # Writing Text | Functions
-# st.write('Text with write')
-# st.write(range(10))
-
-# # # Images
-# from PIL import Image
-# img = Image.open("pizza.jpeg")
-# st.image(img,width=300,caption='Pizza')
-
-# # Videos
-# # vid_file = open("example.mp4","rb")
-# # vid_bytes = vid_file.read()
-# # or vid_file = open("example.mp4","rb").read()
-# # st.video(vid_file)
-
-# # Audio
-# # audio_file = open("examplemusic.mp3","rb").read()
-# # st.audio(audio_file,format='audio/mp3')
-
-# # # Widget
-# # Checkbox
-# if st.checkbox("Show/Hide"):
-#     st.text("Showing or Hiding Widget")
-    
-# # Radio Buttons
-# status = st.radio("What is your status", ("Active","Inactive"))
-
-# if status == "Active":
-#     st.success("You are Active")
-# else:
-#     st.warning("Inactive, Activate!")
-    
-# # SelectBox
-# occupation = st.selectbox("Your Occupation",["Programmer","DataScientist","Chef","Doctor"])
-# st.write("You selected this option ", occupation)
-
-# # MultiSelect
-# location = st.multiselect("Where do you work?",("London","New York","Accra","Kieve","Paris"))
-# st.write("You selected",len(location),"locations")
-
-# # Slider
-# age = st.slider("What is your age?",1,100)
-
-# # Buttons
-# st.button("Simple Button")
-
-# if st.button("About"):
-#     st.text("Streamlit is Cool")
-    
-    
-# # Text Input
-# firstname = st.text_input("Enter Your First Name","Type Here..")
-# if st.button("Submit"):
-#     result = firstname.title()
-#     st.success(result)
-
-# # Text Area
-# message = st.text_area("Enter Your Message","Type Here..")
-# if st.button("Enter"):
-#     result = message.title()
-#     st.success(result)
-
-# # Date Input
-# import datetime
-# today = st.date_input("Today is", datetime.datetime.now())
-
-
-# # Time
-# the_time = st.time_input("The time is", datetime.time())
-
-
-# # Displaying JSON
-# st.text("Display JSON")
-# st.json({'name':'Jesse','gender':'male'})
-
-# # Display Raw Code
-# st.text("Display Raw Code")
-# st.code("import numpy as np")
-
-# # Display Raw Code
-# with st.echo():
-#     # This will also show as a comment
-#     import pandas as pd
-#     df = pd.DataFrame()
-
-# # # Progress Bar
-# # import time
-# # my_bar = st.progress(0)
-# # for p in range(10):
-# #     my_bar.progress(p + 1)
-
-# # # Spinner
-# # with st.spinner("Loading"):
-# #     time.sleep(5)
-# # st.success("Finished")
-
-
-# # # Balloons
-# # st.balloons()
-
-# # SIDEBARS
-# st.sidebar.header("About")
-# st.sidebar.text("This is Streamlit")
-
-# # Functions
-# @st.cache
-# def run_fxn():
-#     return range(100)
-
-# st.write(run_fxn())
-
-# # Plot
-# st.pyplot()
-
-# # DataFrames
-# st.dataframe(df)
-
-# # Tables
-# st.table(df)
-
 
