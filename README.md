@@ -1,6 +1,6 @@
 # Recipe Recommendations
 
-Creating a content-based recommendation system that incorporates user input in the form of ingredient keywords to make accurate suggestions for dinner
+Creating a collaborative-based recommendation system that incorporates user input in the form of ingredient keywords to make accurate suggestions for dinner
 
 ### Data Sources
 
